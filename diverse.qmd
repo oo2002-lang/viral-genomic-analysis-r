@@ -1,0 +1,336 @@
+---
+title: "Untitled"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+install.packages
+
+```{r}
+library(dplyr) # For data manipulation (filter, group_by, summarize)
+library(stringr) # For cleaning txt data 
+library(vegan)  # For diversity 
+library(ggplot2)# For creating static plots
+library(leaflet)    
+library(tidyr) # For reshaping data (pivot_wider)
+```
+
+```{r}
+bird.data <- read.csv("C:/Users/Ola/Downloads/Survey Data entry - Data entry (4).csv")
+```
+
+```{r}
+unique(bird.data$Bird.species)
+```
+
+
+```{r}
+cleaned_data <- bird.data %>%
+  # Step 1: Clean the Bird.species column first.
+  # This removes leading/trailing whitespace and converts everything to lowercase.
+  # This is crucial for the case_when() to work correctly.
+  mutate(
+    Bird.species = str_to_lower(str_trim(Bird.species))
+  ) %>%
+  # Step 2: Now, standardize the species names using case_when().
+  # Because the names are now lowercase, the matching will work as expected.
+  mutate(
+    Bird.species = case_when(
+      # Variations of American Goldfinch
+      Bird.species %in% c("american goldfish") ~ "American Goldfinch",
+      # Variations of American Robin
+      Bird.species %in% c("amercan robin", "robin") ~ "American Robin",
+      # Variations of Belted Kingfisher
+      Bird.species %in% c("belted flycatcher") ~ "Belted Kingfisher",
+      # Variations of Black-capped Chickadee
+      Bird.species %in% c("black-capped chickadee") ~ "Black-capped Chickadee",
+      # Variations of Brown-headed Cowbird
+      Bird.species %in% c("brown headed cowbird") ~ "Brown-headed Cowbird",
+      # Variations of Chipping Sparrow
+      Bird.species %in% c("american chipping sparrow") ~ "Chipping Sparrow",
+      # Variations of Common Grackle
+      Bird.species %in% c("commin grackle") ~ "Common Grackle",
+      # Variations of Cooper's Hawk
+      Bird.species %in% c("coopers hawk") ~ "Cooper's Hawk",
+      # Variations of Eastern Phoebe
+      Bird.species %in% c("eastern pheobe") ~ "Eastern Phoebe",
+      # Variations of Eastern Towhee
+      Bird.species %in% c("eastern towee") ~ "Eastern Towhee",
+      # Variations of Eastern Wood-Pewee
+      Bird.species %in% c("eastern-wood pewee", "eastern wood peewee", "wood peewee") ~ "Eastern Wood-Pewee",
+      # Variations of European Starling
+      Bird.species %in% c("europian starling") ~ "European Starling",
+      # Variations of Gray Catbird
+      Bird.species %in% c("catbird") ~ "Gray Catbird",
+      # Variations of Great Blue Heron
+      Bird.species %in% c("great blue herron") ~ "Great Blue Heron",
+      # Variations of Great Crested Flycatcher
+      Bird.species %in% c("great-crested flycatcher") ~ "Great Crested Flycatcher",
+      # Variations of House Wren
+      Bird.species %in% c("northern house wren") ~ "House Wren",
+      # Variations of Northern Cardinal
+      Bird.species %in% c("northen cardinal") ~ "Northern Cardinal",
+      # Variations of Northern Flicker
+      Bird.species %in% c("northen flicker") ~ "Northern Flicker",
+      # Variations of Northern Mockingbird
+      Bird.species %in% c("northern mochingbird") ~ "Northern Mockingbird",
+      # Variations of Red-bellied Woodpecker
+      Bird.species %in% c("red bellied woodpecker", "red-bellied woodpecker") ~ "Red-bellied Woodpecker",
+      # Variations of Red-eyed Vireo
+      Bird.species %in% c("red-eyed verio", "red eyed vireo", "red-eyed vireo") ~ "Red-eyed Vireo",
+      # Variations of Red-winged Blackbird
+      Bird.species %in% c("red-wing blackbird", "red-winged blackbirds", "Red-Winged Blackbird") ~ "Red-winged Blackbird",
+      # Variations of Rock Pigeon
+      Bird.species %in% c("pigeon", "rock dove", "rock pidgeon") ~ "Rock Pigeon",
+      # Variations of Rose-breasted Grosbeak
+      Bird.species %in% c("rose breasted grosbeak", "rose-breasted grossbeak, Rose-Breasted Grosbeak") ~ "Rose-breasted Grosbeak",
+      # Variations of Warbling Vireo
+      Bird.species %in% c("warbling vierio") ~ "Warbling Vireo",
+      # Variations of White-breasted Nuthatch
+      Bird.species %in% c("white-breasted nuthatch") ~ "White-breasted Nuthatch",
+      # Variations of Wood Thrush
+      Bird.species %in% c("wood trush") ~ "Wood Thrush",
+      # Variations of Chimney Swift
+      Bird.species %in% c("chimey swift") ~ "Chimney Swift",
+      # For all other species that are already correct (just lowercase), convert to Title Case.
+      # The 'TRUE' condition acts as a default for any value that didn't match the cases above.
+      TRUE ~ str_to_title(Bird.species)
+    )
+  )
+
+```
+
+#/iiuyyfirst make everything lowercase
+#then change whatever is left that needs to be changed
+#data <- cleaned_data %>% mutate(Bird.species = ifelse(Bird.species == "old name", "new name", Bird.species)) %>% #do the mutate again for each species name that needs the changing
+
+```
+```{r}
+cleaned_data <- cleaned_data %>% mutate(Bird.species = ifelse(Bird.species == "Rose-Breasted Grosbeak", "Rose-breasted Grosbeak", Bird.species)) %>% mutate(Bird.species = ifelse(Bird.species == "	
+Eastern Wood Peewee", "	
+Eastern wood-Peewee", Bird.species)) %>% mutate(Bird.species = ifelse(Bird.species == "	
+Eastern-Wood Peewee", "	
+Eastern wood-Peewee", Bird.species)) %>% mutate(Bird.species = ifelse(Bird.species == "	
+Red-Winged Blackbird", "	
+Red-winged Blackbird", Bird.species)) 
+```
+
+```{r}
+cleaned_data$Bird.species[cleaned_data$Bird.species == "Red-Winged Blackbird"] <- "Red-winged Blackbird"
+
+cleaned_data$Bird.species[cleaned_data$Bird.species == "Brown-Headed Cowbird"] <- "Brown-headed Cowbird"
+
+cleaned_data$Bird.species[cleaned_data$Bird.species == "Eastern Wood Pewee"] <- "Eastern wood-pewee"
+
+cleaned_data$Bird.species[cleaned_data$Bird.species == "Eastern-Wood Pewee"] <- "Eastern wood-pewee"
+
+```
+
+```{r}
+cleaned_data <- na.omit(cleaned_data)
+```
+
+
+```{r}
+species_summary <- data.frame(
+    Bird.species = character(),
+    Total.Count = integer()
+  )
+
+```
+
+```{r}
+unique.sp <- unique(cleaned_data$Bird.species)
+```
+
+
+
+```{r}
+cleaned_data$Number.individuals.observed <- as.numeric(cleaned_data$Number.individuals.observed)
+for (ii in 1:length(unique.sp)) {
+  x <- unique.sp[ii]
+  count <- sum(cleaned_data[cleaned_data$Bird.species == x,"Number.individuals.observed"])
+    species_summary <- rbind(species_summary, data.frame(
+      Bird.species = x,
+      Total.Count = count
+    ))
+}
+
+```
+
+```{r}
+  rownames(species_counts) <- NULL
+  print(species_summary)
+```
+
+```{r}
+write.csv(cleaned_data, file="cleaned_data.csv")
+```
+
+
+```{r}
+sorted_species <- species_summary %>%
+  arrange(desc(Total.Count)) %>%
+  mutate(Bird.species = factor(Bird.species, levels = unique(Bird.species)))
+
+```
+
+```{r}
+cleaned_data$Bird.species[cleaned_data
+$Bird.species == "Eastern Wood-Pewee"] <- "Eastern wood-pewee"
+```
+
+
+
+```{r}
+sorted_species$Bird.species[sorted_species
+$Bird.species == "Eastern Wood-Pewee"] <- "Eastern wood-pewee"
+```
+
+```{r}
+pewee_sum <- sum(sorted_species$Count[sorted_species$Bird.species == "eastern wood pewee"])
+
+sorted_species_f <- sorted_species[sorted_species$sorted_species != "eastern wood pewee", ]
+
+pewee_row <- data.frame(Bird.species = "eastern wood pewee", Count = pewee_sum)
+
+sorted_species <- rbind(sorted_species_f, pewee_row)
+```
+
+```{r}
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+
+sorted_species <- species_summary %>%
+  arrange(desc(Total.Count)) %>%
+  mutate(Bird.species = factor(Bird.species, levels = unique(Bird.species)))
+
+sorted_species$Bird.species <- as.character(sorted_species$Bird.species)
+sorted_species$Bird.species <- as.factor(sorted_species$Bird.species)  
+
+ggplot(data = sorted_species, aes(x = reorder(Bird.species, -Total.Count), y = Total.Count)) + geom_col() + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(x = "Species", y = "Total Bird Count, Descending")
+
+```
+
+```{r}
+unique_locID <- cleaned_data %>%
+  distinct(Loc_ID, Latitude, Longitude)
+
+```
+
+
+```{r}
+richness_summary <- data.frame(
+  Loc_ID,
+  lat = numeric(),
+  lon = numeric(),
+  richness,
+  Evenness = numeric()
+)
+```
+
+
+```{r}
+for (ii in 1:nrow(unique_locID)) {
+  
+  new_row <- data.frame(
+    LocationID = unique_locID$Loc_ID[i],
+    lat = unique_locID$Latitude[i],
+    lon = unique_locID$Longitude[i],
+    Richness = NA,   
+    Evenness = NA 
+  )
+  
+  richness_summary <- rbind(richness_summary, new_row)
+}
+
+<!-- head(richness_summary) -->
+```
+
+```{r}
+cd1v <- subset(cleaned_data, Loc_ID == 1, select = c(Latitude, Longitude, Bird.species, Number.individuals.observed))
+
+```
+
+```{r}
+richness <- cleaned_data %>%
+  group_by(Loc_ID) %>%
+  summarize(richness = n_distinct(Bird.species))
+```
+
+```{r}
+com.mtrix <- xtabs(Number.individuals.observed ~ Loc_ID + Bird.species, data = cleaned_data)
+
+```
+
+```{r}
+shannon_diversity <- diversity(com.mtrix, index = "shannon")
+```
+
+```{r}
+shannon_diversity_rows <- diversity(com.mtrix, index = "shannon", MARGIN = 1)
+```
+
+```{r}
+evenness <- shannon_diversity_rows
+```
+
+
+```{r}
+sdr <- as.data.frame(shannon_diversity_rows)
+```
+
+```{r}
+sdr2 <- sdr
+```
+
+```{r}
+sdr2 <- tibble::rownames_to_column(sdr2, "Loc_ID") 
+```
+
+```{r}
+coords <- cleaned_data %>%
+  select(Loc_ID, lat = Latitude, lon = Longitude) %>%
+  distinct()
+```
+
+```{r}
+coords$Loc_ID <- as.character(coords$Loc_ID)
+richness$Loc_ID <- as.character(richness$Loc_ID)
+sdr2$Loc_ID <- as.character(sdr2$Loc_ID)
+```
+
+
+```{r}
+richness_summary <- coords %>%
+  left_join(richness, by = "Loc_ID") %>%
+  left_join(sdr2, by = "Loc_ID") %>%
+  select(Loc_ID, lat, lon, richness, evenness) 
+```
+
