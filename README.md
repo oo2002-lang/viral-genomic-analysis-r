@@ -1,5 +1,5 @@
 # Viral Genomic Dataset — Visualization & Analysis
-Exploratory analysis of a viral genomic dataset sourced from Kaggle, examining patterns in GC content, genome size, and host distribution across virus types.
+Exploratory analysis of a viral genomic dataset sourced from Kaggle, examining patterns in GC content, genome size, and host distribution across virus types. Data taken from Kaggle.
 
  # # Methods
 Data cleaning and transformation using tidyr and stringr
