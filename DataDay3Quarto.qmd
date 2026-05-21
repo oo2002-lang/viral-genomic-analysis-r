@@ -1,0 +1,109 @@
+---
+title: "R Data Day #3"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+glimpse(viruses)
+```
+
+```{r}
+viruses_host_count <- viruses %>%
+  filter(!is.na(Host)) %>%
+  filter(!is.na(GC.)) %>% #tool for later
+  separate_rows(Host, sep = ",", convert = TRUE) %>%
+  mutate(Host = str_trim(Host)) %>% 
+  filter(Host != "")
+```
+
+```{r}
+ggplot(viruses_host_count, aes(x = Host)) +
+  geom_bar() + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(
+    title = "Virus Frequency by Host Category"
+  )
+```
+
+```{r}
+ggplot(viruses_host_count, aes(x = Host, y = GC.)) +
+  geom_boxplot() + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(
+    title = "GC% by Host",
+    y = "GC%"
+  ) 
+```
+
+```{r}
+ggplot(viruses_host_count, aes(x=Size.Mb., y = GC.)) + 
+  scale_x_log10() + 
+  geom_jitter(alpha = 0.5) +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Size vs GC Composition",
+    y = "GC%"
+  )
+  #no strong correlation
+  #GC is independent of # of base pairings
+  
+```
+
+```{r}
+ggplot(viruses, aes(x = Size.Mb., y = Genes)) +
+  geom_jitter() +
+  scale_x_log10()+
+  scale_y_log10() + 
+  geom_jitter(alpha = 0.5) +
+  labs(
+    title = "Genome Size vs Number of Genes",
+    y = "Gene Count"
+  ) +
+   geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal()
+# USe a GLM or Log Model 
+# scale log y when using this 
+```
+
+```{r}
+bio_values2 <- lm(Genes~Size.Mb., viruses)
+summary(bio_values2)
+summary(bio_values2)$coefficients[,4] 
+```
+
+```{r}
+bio_vals1 <- lm(GC.~Size.Mb., viruses)
+summary(bio_vals1)
+summary(bio_vals1)$coefficients[,4] 
+```
+
+```{r}
+land_plants_values <- viruses_host_count %>% 
+  filter(Host == "land plants")
+```
+
+```{r}
+ggplot(land_plants_values, aes(x=GC.)) + 
+  geom_histogram(binwidth=1)
+```
+
+```{r}
+algae_values <- viruses_host_count %>% 
+  filter(Host == "algae")
+```
+
+```{r}
+ggplot(algae_values, aes(x=GC.)) + 
+  geom_histogram(binwidth=1)
+```
+
+```{r}
+d_values <- viruses_host_count %>% 
+  filter(Host == "diatom")
+```
+
+```{r}
+ggplot(d_values, aes(x=GC.)) + 
+  geom_histogram(binwidth=1)
+```
